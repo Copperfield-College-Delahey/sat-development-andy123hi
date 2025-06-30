@@ -14,4 +14,11 @@ nameEntry.pack(pady=10, padx=20)
 emailEntry = ctk.CTkEntry(app, placeholder_text="email")
 emailEntry.pack(pady=10, padx=20)
 
+loginButton = ctk.CTkButton(app, text="login")
+loginButton.pack(pady=10, padx=20)
+
+signupButton = ctk.CTkButton(app, text="sign up")
+signupButton.pack(pady=10, padx=20)
+
+
 app.mainloop()
