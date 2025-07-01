@@ -23,4 +23,22 @@ categoryMenu.pack(pady=10)
 dateLabel = ctk.CTkLabel(app, text="date")
 dateLabel.pack(pady=10)
 
+dateEntry = ctk.CTkEntry(app)
+dateEntry.pack(pady=10)
+
+idontknowButton = ctk.CTkButton(app, text="I don't know")
+idontknowButton.pack(pady=10)
+
+askforhelpButton = ctk.CTkButton(app, text="Ask for Help")
+askforhelpButton.pack(pady=10)
+
+feedbackButton = ctk.CTkButton(app, text="Feedback")
+feedbackButton.pack(pady=10)
+
+saveButton = ctk.CTkButton(app, text="Save")
+saveButton.pack(pady=10)
+
+viewpastEntry = ctk.CTkButton(app, text="View past Entry")
+viewpastEntry.pack(pady=10)
+
 app.mainloop()
