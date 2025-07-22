@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-
+# window
 app = ctk.CTk()
 app.title("waste log")
 app.geometry("1000x600")
