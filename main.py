@@ -3,9 +3,17 @@ from tkinter import messagebox
 
 wasteLog = []
 
+# Fuctions
 def suggestCategory():
 
 def idk():
+    item = itemEntry.get()
+    if not item:
+        messagebox.showwarning("Input needed", "Please enter a waste item first.")
+        return
+    suggestion = suggestCategory()
+    if suggestion == "Unknown":
+        messagebox.showinfo("Suggestion", "Could not determine category.")
 
 def help():
 
