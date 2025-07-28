@@ -1,81 +1,82 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-wasteLog = []
+# Waste log list
+WasteLog = []
 
-# Fuctions
-def suggestCategory():
+# Function to suggest category (stub)
+def SuggestCategory():
+    messagebox.showinfo("Suggestion", "Try checking the material. For example, plastic is usually recyclable.")
 
-def idk():
-    item = itemEntry.get()
-    if not item:
-        messagebox.showwarning("Input needed", "Please enter a waste item first.")
+# "I Don't Know" button action
+def Idk():
+    Item = WasteItemEntry.get()
+    if not Item:
+        messagebox.showerror("Error", "Please enter the waste item first.")
+    else:
+        messagebox.showinfo("Hint", f"We're not sure what '{Item}' is. Try using the 'Ask for Help' button.")
+
+# Help function
+def Help():
+    messagebox.showinfo("Help", "If you're unsure about your waste item, choose 'I don't know' or ask for help.\n\nExamples:\n- Plastic bottle = Recyclable\n- Food wrapper = Disposable")
+
+# Save the log entry
+def SaveEntry():
+    end
+
+# Feedback function
+def Feedback():
+    if not WasteLog:
+        messagebox.showinfo("Feedback", "No entries yet.")
         return
-    suggestion = suggestCategory()
-    if suggestion == "Unknown":
-        messagebox.showinfo("Suggestion", "Could not determine category.")
+    counts = {"Recyclable": 0, "Reuseable": 0, "Disposable": 0}
+    for entry in WasteLog:
+        category = entry["Category"].capitalize()
+        if category in counts:
+            counts[category] += 1
+# View logs
+def ViewLogs():
+    end
 
-def help():
+# Window setup
+App = ctk.CTk()
+App.title("Waste Log")
+App.geometry("1000x600")
 
-def saveEntry():
-    item = itemEntry.get()
-    category =
+# Title
+Title = ctk.CTkLabel(App, text="Waste Track", font=("Arial", 24, "bold"))
+Title.pack(pady=10)
 
-def feedback():
+# Waste item
+WasteItemLabel = ctk.CTkLabel(App, text="Waste Item")
+WasteItemLabel.pack(pady=5)
+WasteItemEntry = ctk.CTkEntry(App, placeholder_text="Enter waste item")
+WasteItemEntry.pack(pady=5)
 
-def viweLogs():
+# Category
+CategoryLabel = ctk.CTkLabel(App, text="Category")
+CategoryLabel.pack(pady=5)
+CategoryMenu = ctk.CTkComboBox(App, values=["Recyclable", "Reuseable", "Disposable"])
+CategoryMenu.pack(pady=5)
+
+# Date
 
 
+# Buttons
+IdkButton = ctk.CTkButton(App, text="I Don't Know", command=Idk)
+IdkButton.pack(pady=5)
 
-# window
-app = ctk.CTk()
-app.title("waste log")
-app.geometry("1000x600")
+AskForHelpButton = ctk.CTkButton(App, text="Ask for Help", command=Help)
+AskForHelpButton.pack(pady=5)
 
-# title
-title = ctk.CTkLabel(app, text="waste track", font=("Arial", 20))
-title.pack(pady=10)
+FeedbackButton = ctk.CTkButton(App, text="Feedback", command=Feedback)
+FeedbackButton.pack(pady=5)
 
-# waste item
-wasteItemLabel = ctk.CTkLabel(app, text="waste item")
-wasteItemLabel.pack(pady=10)
+SaveButton = ctk.CTkButton(App, text="Save", command=SaveEntry)
+SaveButton.pack(pady=5)
 
-wasteItemEntry = ctk.CTkEntry(app)
-wasteItemEntry.pack(pady=10)
+ViewPastEntry = ctk.CTkButton(App, text="View Past Entry", command=ViewLogs)
+ViewPastEntry.pack(pady=5)
 
-# category
-categoryLabel = ctk.CTkLabel(app, text="category")
-categoryLabel.pack(pady=10)
-
-# dropdown menu for categorys
-categoryMenu = ctk.CTkComboBox(app, values=["recyclable", "reuseable", "disposable"])
-categoryMenu.pack(pady=10)
-
-# date
-dateLabel = ctk.CTkLabel(app, text="date")
-dateLabel.pack(pady=10)
-
-dateEntry = ctk.CTkEntry(app)
-dateEntry.pack(pady=10)
-
-#  i dont know button
-idontknowButton = ctk.CTkButton(app, text="I don't know")
-idontknowButton.pack(pady=10)
-
-# ask for help button
-askforhelpButton = ctk.CTkButton(app, text="Ask for Help")
-askforhelpButton.pack(pady=10)
-
-# feedback button
-feedbackButton = ctk.CTkButton(app, text="Feedback")
-feedbackButton.pack(pady=10)
-
-# save button
-saveButton = ctk.CTkButton(app, text="Save")
-saveButton.pack(pady=10)
-
-# view past entry button
-viewpastEntry = ctk.CTkButton(app, text="View past Entry")
-viewpastEntry.pack(pady=10)
-
-app.mainloop()
+# Start the app
+App.mainloop()

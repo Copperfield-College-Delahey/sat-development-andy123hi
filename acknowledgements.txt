@@ -1,0 +1,20 @@
+def Feedback():
+    if not WasteLog:
+        messagebox.showinfo("Feedback", "No entries yet.")
+        return
+    counts = {"Recyclable": 0, "Reuseable": 0, "Disposable": 0}
+    for entry in WasteLog:
+        category = entry["Category"].capitalize()
+        if category in counts:
+            counts[category] += 1
+
+    message = "\n".join([f"{cat}: {count}" for cat, count in counts.items()])
+    messagebox.showinfo("Your Waste Summary", f"Here's your current log summary:\n\n{message}")
+
+
+def Idk():
+    Item = WasteItemEntry.get()
+    if not Item:
+        messagebox.showerror("Error", "Please enter the waste item first.")
+    else:
+        messagebox.showinfo("Hint", f"We're not sure what '{Item}' is. Try using the 'Ask for Help' button.")

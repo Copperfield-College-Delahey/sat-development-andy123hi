@@ -1,57 +1,63 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-# window
-app = ctk.CTk()
-app.title("waste log")
-app.geometry("1000x600")
+# Initialize the window
+App = ctk.CTk()
+App.title("Waste Log")
+App.geometry("1000x600")
 
-# stores users
-users = {}
+# Store user data
+UserAccounts = {}
 
-# sign up fuction
-def signup():
-    name = nameEntry.get()
-    email = emailEntry.get()
+# Sign-up function
+def SignUp():
+    UserName = NameEntry.get()
+    UserEmail = EmailEntry.get()
 
-    if not name or not email:
-        messagebox.showerror("Error")
+    if not UserName or not UserEmail:
+        messagebox.showerror("Error", "Please fill in all fields.")
         return
 
-    if email in users:
+    if UserEmail in UserAccounts:
         messagebox.showinfo("Already Registered", "You are already signed up. Please login.")
+    else:
+        UserAccounts[UserEmail] = UserName
+        messagebox.showinfo("Success", f"Signed up as {UserName}")
 
-# login fuction
-def login():
-    name = nameEntry.get()
-    email = emailEntry.get()
+# Login function
+def LogIn():
+    UserName = NameEntry.get()
+    UserEmail = EmailEntry.get()
 
-    if not name or not email:
-        messagebox.showerror("Error")
+    if not UserName or not UserEmail:
+        messagebox.showerror("Error", "Please fill in all fields.")
         return
 
-    if email in users == name:
-        messagebox.showinfo("Welcome")
+    if UserEmail in UserAccounts and UserAccounts[UserEmail] == UserName:
+        messagebox.showinfo("Welcome", f"Hello, {UserName}! You're now logged in.")
 
-# title
-titleLabel = ctk.CTkLabel(app, text="waste track", font=("Henlvetica", 30))
-titleLabel.pack(pady=20)
+    else:
+        messagebox.showwarning("Failed", "Invalid login. Please sign up first.")
 
-# name entry
-nameEntry = ctk.CTkEntry(app, placeholder_text="name")
-nameEntry.pack(pady=10, padx=20)
+# Title label
+TitleLabel = ctk.CTkLabel(App, text="Waste Track", font=("Helvetica", 30))
+TitleLabel.pack(pady=20)
 
-# email entry
-emailEntry = ctk.CTkEntry(app, placeholder_text="email")
-emailEntry.pack(pady=10, padx=20)
+# Name entry
+NameEntry = ctk.CTkEntry(App, placeholder_text="Name")
+NameEntry.pack(pady=10, padx=20)
 
-# login button
-loginButton = ctk.CTkButton(app, text="login")
-loginButton.pack(pady=10, padx=20)
+# Email entry
+EmailEntry = ctk.CTkEntry(App, placeholder_text="Email")
+EmailEntry.pack(pady=10, padx=20)
 
-# signup button
-signupButton = ctk.CTkButton(app, text="sign up")
-signupButton.pack(pady=10, padx=20)
+# Login button
+LoginButton = ctk.CTkButton(App, text="Login", command=LogIn)
+LoginButton.pack(pady=10, padx=20)
 
+# Signup button
+SignUpButton = ctk.CTkButton(App, text="Sign Up", command=SignUp)
+SignUpButton.pack(pady=10, padx=20)
 
-app.mainloop()
+# Run the app
+App.mainloop()
