@@ -18,3 +18,9 @@ def Idk():
         messagebox.showerror("Error", "Please enter the waste item first.")
     else:
         messagebox.showinfo("Hint", f"We're not sure what '{Item}' is. Try using the 'Ask for Help' button.")
+
+        
+def ShowFrame(frame):
+    for widget in App.winfo_children():
+        widget.pack_forget()
+    frame.pack(fill="both", expand=True)
