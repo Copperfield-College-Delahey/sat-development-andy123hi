@@ -1,26 +1,89 @@
-def Feedback():
-    if not WasteLog:
+def showFrame(frame):
+    for widget in app.winfo_children():
+        widget.pack_forget()
+    frame.pack(fill="both", expand=True)
+
+def idk():
+    item = wasteItemEntry.get().lower()
+
+    if not item:
+        messagebox.showerror("Error", "Enter the waste item first.")
+        return
+
+    recyclableKeywords = ["plastic", "bottle", "paper", "cardboard", "can", "glass"]
+    reuseableKeywords = ["bag", "container", "box", "cloth", "jar"]
+    disposableKeywords = ["wrapper", "tissue", "food", "straw", "napkin", "leftover"]
+
+    suggestedCategory = None
+
+    for word in recyclableKeywords:
+        if word in item:
+            suggestedCategory = "Recyclable"
+            break
+    if not suggestedCategory:
+        for word in reuseableKeywords:
+            if word in item:
+                suggestedCategory = "Reuseable"
+                break
+    if not suggestedCategory:
+        for word in disposableKeywords:
+            if word in item:
+                suggestedCategory = "Disposable"
+                break
+
+    if suggestedCategory:
+        messagebox.showinfo("Suggestion", f"The item '{item}' might be: {suggestedCategory}")
+    else:
+        messagebox.showinfo("Suggestion", f"Sorry, we couldn't identify the category for '{item}'. Try asking for help.")
+
+
+def saveEntry():
+    item = wasteItemEntry.get()
+    category = categoryMenu.get()
+    date = dateEntry.get()
+
+    if not item or not category or not date:
+        messagebox.showerror("Error", "Please fill in all fields.")
+        return
+
+    try:
+        datetime.strptime(date, "%d/%m/%Y")
+    except ValueError:
+        messagebox.showerror("Date Error", "Use format DD/MM/YYYY.")
+        return
+
+    wasteLog.append({"Item": item, "Category": category, "Date": date})
+    messagebox.showinfo("Saved", f"Saved entry: {item} ({category}) on {date}")
+    wasteItemEntry.delete(0, 'end')
+    dateEntry.delete(0, 'end')
+
+
+def feedback():
+    if not wasteLog:
         messagebox.showinfo("Feedback", "No entries yet.")
         return
+
     counts = {"Recyclable": 0, "Reuseable": 0, "Disposable": 0}
-    for entry in WasteLog:
+    for entry in wasteLog:
         category = entry["Category"].capitalize()
         if category in counts:
             counts[category] += 1
 
-    message = "\n".join([f"{cat}: {count}" for cat, count in counts.items()])
-    messagebox.showinfo("Your Waste Summary", f"Here's your current log summary:\n\n{message}")
+    summary = "\n".join([f"{k}: {v}" for k, v in counts.items()])
+    messagebox.showinfo("Feedback", f"Summary:\n\n{summary}")
 
 
-def Idk():
-    Item = WasteItemEntry.get()
-    if not Item:
-        messagebox.showerror("Error", "Please enter the waste item first.")
+def viewLogs():
+    pastEntriesTextBox.delete("1.0", "end")
+    if not wasteLog:
+        pastEntriesTextBox.insert("end", "No past entries yet.")
     else:
-        messagebox.showinfo("Hint", f"We're not sure what '{Item}' is. Try using the 'Ask for Help' button.")
+        for i, entry in enumerate(wasteLog, start=1):
+            pastEntriesTextBox.insert("end", f"{i}. {entry['Item']} ({entry['Category']}) on {entry['Date']}\n")
+    showFrame(pastEntriesFrame)
 
-        
-def ShowFrame(frame):
-    for widget in App.winfo_children():
-        widget.pack_forget()
-    frame.pack(fill="both", expand=True)
+
+showFrame(loginFrame)
+
+
+ctk.CTkButton(pastEntriesFrame, text="Back to Waste Log", command=lambda: showFrame(wasteLogFrame)).pack(pady=10)

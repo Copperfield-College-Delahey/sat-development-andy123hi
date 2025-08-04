@@ -1,151 +1,172 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-# Initialize the window
-App = ctk.CTk()
-App.title("Waste Log")
-App.geometry("1000x600")
+# App setup
+app = ctk.CTk()
+app.title("Waste Log")
+app.geometry("1000x600")
 
-# Store user data
-UserAccounts = {}
+userAccounts = {}
+wasteLog = []
 
-# Switch Screens
-def ShowFrame(frame):
-    for widget in App.winfo_children():
+# Switches between screens
+def showFrame(frame):
+    for widget in app.winfo_children():
         widget.pack_forget()
     frame.pack(fill="both", expand=True)
 
-# Sign-up function
-def SignUp():
-    UserName = NameEntry.get()
-    UserEmail = EmailEntry.get()
+# Sign-up with email validation
+def signUp():
+    userName = nameEntry.get()
+    userEmail = emailEntry.get()
 
-    if not UserName or not UserEmail:
+    if not userName or not userEmail:
         messagebox.showerror("Error", "Please fill in all fields.")
         return
 
-    if UserEmail in UserAccounts:
-        messagebox.showinfo("Already Registered", "You are already signed up. Please login.")
+    if not userEmail.endswith("@gmail.com"):
+        messagebox.showerror("Invalid Email", "Email must end with '@gmail.com'")
+        return
+
+    if userEmail in userAccounts:
+        messagebox.showinfo("Already Registered", "You are already signed up.")
     else:
-        UserAccounts[UserEmail] = UserName
-        messagebox.showinfo("Success", f"Signed up as {UserName}")
+        userAccounts[userEmail] = userName
+        messagebox.showinfo("Success", f"Signed up as {userName}")
 
-# Login function
-def LogIn():
-    UserName = NameEntry.get()
-    UserEmail = EmailEntry.get()
+# Login and go to waste log
+def logIn():
+    userName = nameEntry.get()
+    userEmail = emailEntry.get()
 
-    if not UserName or not UserEmail:
+    if not userName or not userEmail:
         messagebox.showerror("Error", "Please fill in all fields.")
         return
 
-    if UserEmail in UserAccounts and UserAccounts[UserEmail] == UserName:
-        messagebox.showinfo("Welcome", f"Hello, {UserName}! You're now logged in.")
-
+    if userEmail in userAccounts and userAccounts[userEmail] == userName:
+        messagebox.showinfo("Welcome", f"Hello, {userName}!")
+        showFrame(wasteLogFrame)
     else:
         messagebox.showwarning("Failed", "Invalid login. Please sign up first.")
 
-# Login Screen
-LoginFrame = ctk.CTkFrame(App)
+# Suggestion message
+def suggestCategory():
+    messagebox.showinfo("Suggestion", "Plastic is usually recyclable. Try checking the material.")
 
-# Title label
-TitleLabel = ctk.CTkLabel(LoginFrame, text="Waste Track", font=("Helvetica", 30))
-TitleLabel.pack(pady=20)
+# 'I don't know' with keyword-based suggestions
+def idk():
+    item = wasteItemEntry.get().strip().lower()
 
-# Name entry
-NameEntry = ctk.CTkEntry(LoginFrame, placeholder_text="Name")
-NameEntry.pack(pady=10, padx=20)
+    if not item:
+        messagebox.showerror("Error", "Enter the waste item first.")
+        return
 
-# Email entry
-EmailEntry = ctk.CTkEntry(LoginFrame, placeholder_text="Email")
-EmailEntry.pack(pady=10, padx=20)
+    recyclableKeywords = ["plastic", "paper", "glass", "tin", "cardboard", "can", "jar", "bottle", "container"]
+    disposableKeywords = ["wrapper", "foil", "peel", "tissue", "straw", "styrofoam", "napkin"]
+    reusableKeywords = ["bag", "cloth", "tote", "reusable", "container", "box"]
 
-# Login button
-LoginButton = ctk.CTkButton(LoginFrame, text="Login", command=LogIn)
-LoginButton.pack(pady=10, padx=20)
-
-# Signup button
-SignUpButton = ctk.CTkButton(LoginFrame, text="Sign Up", command=SignUp)
-SignUpButton.pack(pady=10, padx=20)
-
-# Waste Log Screen
-wasteLogFrame = ctk.CTkFrame(App)
-
-# Waste log list
-WasteLog = []
-
-# Function to suggest category (stub)
-def SuggestCategory():
-    messagebox.showinfo("Suggestion", "Try checking the material. For example, plastic is usually recyclable.")
-
-# "I Don't Know" button action
-def Idk():
-    Item = WasteItemEntry.get()
-    if not Item:
-        messagebox.showerror("Error", "Please enter the waste item first.")
+    if any(word in item for word in recyclableKeywords):
+        suggested = "Recyclable"
+    elif any(word in item for word in disposableKeywords):
+        suggested = "Disposable"
+    elif any(word in item for word in reusableKeywords):
+        suggested = "Reuseable"
     else:
-        messagebox.showinfo("Hint", f"We're not sure what '{Item}' is. Try using the 'Ask for Help' button.")
+        messagebox.showinfo("Suggestion", f"Not sure about '{item}'. Try using the Help button for general tips.")
+        return
 
-# Help function
-def Help():
-    messagebox.showinfo("Help", "If you're unsure about your waste item, choose 'I don't know' or ask for help.\n\nExamples:\n- Plastic bottle = Recyclable\n- Food wrapper = Disposable")
+    messagebox.showinfo("Suggestion", f"The item '{item}' is likely categorized as '{suggested}'.")
+    categoryMenu.set(suggested)
 
-# Save the log entry
-def SaveEntry():
-    end
+# Help popup
+def helpInfo():
+    messagebox.showinfo("Help", "Examples:\n- Plastic bottle = Recyclable\n- Food wrapper = Disposable")
 
-# Feedback function
-def Feedback():
-    if not WasteLog:
+# Save waste entry
+def saveEntry():
+    item = wasteItemEntry.get()
+    category = categoryMenu.get()
+    date = dateEntry.get()
+
+    if not item or not category or not date:
+        messagebox.showerror("Error", "Please fill in all fields.")
+        return
+
+    wasteLog.append({"Item": item, "Category": category, "Date": date})
+    messagebox.showinfo("Saved", f"Saved entry: {item} ({category}) on {date}")
+    wasteItemEntry.delete(0, 'end')
+    dateEntry.delete(0, 'end')
+
+# Feedback
+def feedback():
+    if not wasteLog:
         messagebox.showinfo("Feedback", "No entries yet.")
         return
+
     counts = {"Recyclable": 0, "Reuseable": 0, "Disposable": 0}
-    for entry in WasteLog:
+    for entry in wasteLog:
         category = entry["Category"].capitalize()
         if category in counts:
             counts[category] += 1
-# View logs
-def ViewLogs():
-    end
 
+    summary = "\n".join([f"{k}: {v}" for k, v in counts.items()])
+    messagebox.showinfo("Feedback", f"Summary:\n\n{summary}")
 
-# Title
-Title = ctk.CTkLabel(wasteLogFrame, text="Waste Track", font=("Arial", 24, "bold"))
-Title.pack(pady=10)
+# View past waste entries
+def viewLogs():
+    pastEntriesTextBox.delete("1.0", "end")
+    if not wasteLog:
+        pastEntriesTextBox.insert("end", "No past entries yet.")
+    else:
+        for i, entry in enumerate(wasteLog, start=1):
+            pastEntriesTextBox.insert("end", f"{i}. {entry['Item']} ({entry['Category']}) on {entry['Date']}\n")
+    showFrame(pastEntriesFrame)
 
-# Waste item
-WasteItemLabel = ctk.CTkLabel(wasteLogFrame, text="Waste Item")
-WasteItemLabel.pack(pady=5)
-WasteItemEntry = ctk.CTkEntry(wasteLogFrame, placeholder_text="Enter waste item")
-WasteItemEntry.pack(pady=5)
+# Login screen
+loginFrame = ctk.CTkFrame(app)
 
-# Category
-CategoryLabel = ctk.CTkLabel(wasteLogFrame, text="Category")
-CategoryLabel.pack(pady=5)
-CategoryMenu = ctk.CTkComboBox(wasteLogFrame, values=["Recyclable", "Reuseable", "Disposable"])
-CategoryMenu.pack(pady=5)
+ctk.CTkLabel(loginFrame, text="Waste Track", font=("Helvetica", 30)).pack(pady=20)
 
-# Date
+nameEntry = ctk.CTkEntry(loginFrame, placeholder_text="Name")
+nameEntry.pack(pady=10, padx=20)
 
+emailEntry = ctk.CTkEntry(loginFrame, placeholder_text="Email")
+emailEntry.pack(pady=10, padx=20)
 
-# Buttons
-IdkButton = ctk.CTkButton(wasteLogFrame, text="I Don't Know", command=Idk)
-IdkButton.pack(pady=5)
+ctk.CTkButton(loginFrame, text="Login", command=logIn).pack(pady=10)
+ctk.CTkButton(loginFrame, text="Sign Up", command=signUp).pack(pady=10)
 
-AskForHelpButton = ctk.CTkButton(wasteLogFrame, text="Ask for Help", command=Help)
-AskForHelpButton.pack(pady=5)
+# Waste logging screen
+wasteLogFrame = ctk.CTkFrame(app)
 
-FeedbackButton = ctk.CTkButton(wasteLogFrame, text="Feedback", command=Feedback)
-FeedbackButton.pack(pady=5)
+ctk.CTkLabel(wasteLogFrame, text="Waste Log", font=("Arial", 24, "bold")).pack(pady=10)
 
-SaveButton = ctk.CTkButton(wasteLogFrame, text="Save", command=SaveEntry)
-SaveButton.pack(pady=5)
+wasteItemEntry = ctk.CTkEntry(wasteLogFrame, placeholder_text="Enter waste item")
+wasteItemEntry.pack(pady=5)
 
-ViewPastEntry = ctk.CTkButton(wasteLogFrame, text="View Past Entry", command=ViewLogs)
-ViewPastEntry.pack(pady=5)
+categoryMenu = ctk.CTkComboBox(wasteLogFrame, values=["Recyclable", "Reuseable", "Disposable"])
+categoryMenu.pack(pady=5)
 
+dateEntry = ctk.CTkEntry(wasteLogFrame, placeholder_text="DD MM YYYY")
+dateEntry.pack(pady=5)
 
-ShowFrame(LoginFrame)
+ctk.CTkButton(wasteLogFrame, text="I Don't Know", command=idk).pack(pady=5)
+ctk.CTkButton(wasteLogFrame, text="Ask for Help", command=helpInfo).pack(pady=5)
+ctk.CTkButton(wasteLogFrame, text="Feedback", command=feedback).pack(pady=5)
+ctk.CTkButton(wasteLogFrame, text="Save Entry", command=saveEntry).pack(pady=5)
+ctk.CTkButton(wasteLogFrame, text="View Past Entry", command=viewLogs).pack(pady=5)
+ctk.CTkButton(wasteLogFrame, text="Logout", command=lambda: showFrame(loginFrame)).pack(pady=5)
 
-# Run the app
-App.mainloop()
+# Past entries screen
+pastEntriesFrame = ctk.CTkFrame(app)
+
+ctk.CTkLabel(pastEntriesFrame, text="Past Waste Entries", font=("Arial", 20, "bold")).pack(pady=10)
+pastEntriesTextBox = ctk.CTkTextbox(pastEntriesFrame, width=600, height=300)
+pastEntriesTextBox.pack(pady=10)
+
+ctk.CTkButton(pastEntriesFrame, text="Back to Waste Log", command=lambda: showFrame(wasteLogFrame)).pack(pady=10)
+
+# Start at login
+showFrame(loginFrame)
+
+app.mainloop()
