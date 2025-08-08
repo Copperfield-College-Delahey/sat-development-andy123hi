@@ -1,13 +1,26 @@
 import customtkinter as ctk
 from tkinter import messagebox
+import json
+import os
+from datetime import datetime
 
 # App setup
 app = ctk.CTk()
 app.title("Waste Log")
 app.geometry("1000x600")
 
+# Stores users
 userAccounts = {}
 wasteLog = []
+
+# Loads the previous users
+if os.path.exists("users.json"):
+    with open("users.json", "r") as f:
+        userAccounts = json.load(f)
+
+if os.path.exists("waste_log.json"):
+    with open("waste_log.json", "r") as f:
+        wasteLog = json.load(f)
 
 # Switches between screens
 def showFrame(frame):
@@ -32,6 +45,8 @@ def signUp():
         messagebox.showinfo("Already Registered", "You are already signed up.")
     else:
         userAccounts[userEmail] = userName
+        with open("users.json", "w") as f:
+            json.dump(userAccounts, f)
         messagebox.showinfo("Success", f"Signed up as {userName}")
 
 # Login and go to waste log
@@ -82,7 +97,15 @@ def idk():
 def helpInfo():
     messagebox.showinfo("Help", "Examples:\n- Plastic bottle = Recyclable\n- Food wrapper = Disposable")
 
-# Save waste entry
+# Date validation function
+def validateDate(date_str):
+    try:
+        datetime.strptime(date_str, "%d %m %Y")
+        return True
+    except ValueError:
+        return False
+
+# Save waste entry with date validation
 def saveEntry():
     item = wasteItemEntry.get()
     category = categoryMenu.get()
@@ -92,7 +115,13 @@ def saveEntry():
         messagebox.showerror("Error", "Please fill in all fields.")
         return
 
+    if not validateDate(date):
+        messagebox.showerror("Invalid Date", "Date must be in the format 'DD MM YYYY' and valid.")
+        return
+
     wasteLog.append({"Item": item, "Category": category, "Date": date})
+    with open("waste_log.json", "w") as f:
+        json.dump(wasteLog, f)
     messagebox.showinfo("Saved", f"Saved entry: {item} ({category}) on {date}")
     wasteItemEntry.delete(0, 'end')
     dateEntry.delete(0, 'end')

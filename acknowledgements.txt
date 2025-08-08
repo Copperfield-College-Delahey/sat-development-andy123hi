@@ -87,3 +87,15 @@ showFrame(loginFrame)
 
 
 ctk.CTkButton(pastEntriesFrame, text="Back to Waste Log", command=lambda: showFrame(wasteLogFrame)).pack(pady=10)
+
+
+if os.path.exists("users.json"):
+    with open("users.json", "r") as f:
+        userAccounts = json.load(f)
+
+if os.path.exists("waste_log.json"):
+    with open("waste_log.json", "r") as f:
+        wasteLog = json.load(f)
+
+  with open("users.json", "w") as f:
+            json.dump(userAccounts, f)
